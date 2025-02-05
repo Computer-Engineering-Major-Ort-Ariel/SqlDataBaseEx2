@@ -112,6 +112,12 @@ class Program
           }
           else if (request.Path == "getHotels")
           {
+            var cityId = request.GetBody<int>();
+            var hotels = database
+              .Hotels
+              .Where(hotel => hotel.CityId == cityId)
+              .ToArray();
+            response.Send(hotels);
           }
           else if (request.Path == "getHotel")
           {
@@ -152,14 +158,16 @@ class Program
 
             response.Send(success);
           }
-          else if (request.Path == "getReservations") {
+          else if (request.Path == "getReservations")
+          {
             var userId = request.GetBody<string>();
 
             var reservations = database.Reservations.Where(res => res.UserId == userId).ToArray();
 
             response.Send(reservations);
           }
-          else if (request.Path == "unbook") {
+          else if (request.Path == "unbook")
+          {
             var resId = request.GetBody<int>();
 
             var res = database.Reservations.Find(resId)!;
