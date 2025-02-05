@@ -13,7 +13,6 @@ let hotelImg = document.querySelector("#hotelImg") as HTMLImageElement;
 let reservationsUl = document.querySelector("#reservationUl") as HTMLUListElement;
 
 reservationInput.onchange = function() {
-  console.log(reservationInput.value);
   if (userId != null && reservationInput.value != "") {
     reservationButton.disabled = false;
   }

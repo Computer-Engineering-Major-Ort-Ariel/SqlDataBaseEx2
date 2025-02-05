@@ -129,34 +129,11 @@ class Program
           }
           else if (request.Path == "getDates")
           {
-            var hotelId = request.GetBody<int>();
-
-            var hotel = database.Hotels.Find(hotelId);
-
-            var reservations = database
-              .Reservations
-              .Where(res => res.HotelId == hotelId)
-              .Select(res => res.Date)
-              .ToArray();
-
-            response.Send(reservations);
+            
           }
           else if (request.Path == "addReservation")
           {
-            var (date, userId, hotelId) = request.GetBody<(string, string, int)>();
-
-            var exists = database
-              .Reservations
-              .Any(res => res.HotelId == hotelId && res.Date == date);
-
-            if (!exists)
-            {
-              database.Reservations.Add(new Reservation(date, userId, hotelId));
-            }
-
-            var success = !exists;
-
-            response.Send(success);
+            
           }
           else if (request.Path == "getReservations")
           {
