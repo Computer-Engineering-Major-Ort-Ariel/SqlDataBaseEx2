@@ -169,33 +169,11 @@ class Program
           }
           else if (request.Path == "rate")
           {
-            var (value, userId, hotelId) = request.GetBody<(double, string, int)>();
 
-            var rating = database.Ratings
-            .FirstOrDefault(rating => rating.UserId == userId && rating.HotelId == hotelId);
-
-            if (rating != null) {
-              rating.Value = value;
-            }
-            else {
-              database.Ratings.Add(new Rating(value, userId, hotelId));
-            }
           }
           else if (request.Path == "getAverage")
           {
-            var hotelId = request.GetBody<int>();
 
-            var ratings = database.Ratings
-              .Where(rating => rating.HotelId == hotelId)
-              .Select(rating => rating.Value)
-              .ToArray();
-
-            var ratingsSum = ratings
-              .Aggregate(0.0, (sum, value) => sum + value);
-
-            var average = ratingsSum / ratings.Length;
-
-            response.Send(average);
           }
           else
           {
