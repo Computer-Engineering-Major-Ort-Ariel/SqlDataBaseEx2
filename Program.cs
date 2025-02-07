@@ -129,11 +129,27 @@ class Program
           }
           else if (request.Path == "getDates")
           {
-            
+            var hotelId = request.GetBody<int>();
+            var hotel = database.Hotels.Find(hotelId);
+            var reservations = database
+              .Reservations
+              .Where(res => res.HotelId == hotelId)
+              .Select(res => res.Date)
+              .ToArray();
+            response.Send(reservations);
           }
           else if (request.Path == "addReservation")
           {
-            
+            var (date, userId, hotelId) = request.GetBody<(string, string, int)>();
+            var exists = database
+              .Reservations
+              .Any(res => res.HotelId == hotelId && res.Date == date);
+            if (!exists)
+            {
+              database.Reservations.Add(new Reservation(date, userId, hotelId));
+            }
+            var success = !exists;
+            response.Send(success);
           }
           else if (request.Path == "getReservations")
           {
@@ -150,6 +166,36 @@ class Program
             var res = database.Reservations.Find(resId)!;
 
             database.Remove(res);
+          }
+          else if (request.Path == "rate")
+          {
+            var (value, userId, hotelId) = request.GetBody<(double, string, int)>();
+
+            var rating = database.Ratings
+            .FirstOrDefault(rating => rating.UserId == userId && rating.HotelId == hotelId);
+
+            if (rating != null) {
+              rating.Value = value;
+            }
+            else {
+              database.Ratings.Add(new Rating(value, userId, hotelId));
+            }
+          }
+          else if (request.Path == "getAverage")
+          {
+            var hotelId = request.GetBody<int>();
+
+            var ratings = database.Ratings
+              .Where(rating => rating.HotelId == hotelId)
+              .Select(rating => rating.Value)
+              .ToArray();
+
+            var ratingsSum = ratings
+              .Aggregate(0.0, (sum, value) => sum + value);
+
+            var average = ratingsSum / ratings.Length;
+
+            response.Send(average);
           }
           else
           {
@@ -179,6 +225,7 @@ class Database() : DbBase("database")
   public DbSet<City> Cities { get; set; } = default!;
   public DbSet<Hotel> Hotels { get; set; } = default!;
   public DbSet<Reservation> Reservations { get; set; } = default!;
+  public DbSet<Rating> Ratings { get; set; } = default!;
 }
 
 class User(string id, string username, string password)
@@ -212,4 +259,15 @@ class Reservation(string date, string userId, int hotelId)
   [ForeignKey("UserId")] public User User { get; set; } = default!;
   public int HotelId { get; set; } = hotelId;
   [ForeignKey("HotelId")] public Hotel Hotel { get; set; } = default!;
+}
+
+class Rating(double value, string userId, int hotelId)
+{
+  [Key] public int Id { get; set; } = default!;
+  public double Value { get; set; } = value;
+  public string UserId { get; set; } = userId;
+  [ForeignKey("UserId")] public User User { get; set; } = default!;
+  public int HotelId { get; set; } = hotelId;
+  [ForeignKey("HotelId")] public Hotel Hotel { get; set; } = default!;
+
 }

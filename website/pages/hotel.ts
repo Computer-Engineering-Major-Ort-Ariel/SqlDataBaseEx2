@@ -7,31 +7,69 @@ let hotelId = parseInt(query.get("hotelId")!);
 let userId = await getUserId();
 
 let hotelH1 = document.querySelector("#hotelH1") as HTMLHeadingElement;
-let reservationInput = document.querySelector("#reservationInput") as HTMLInputElement;
-let reservationButton = document.querySelector("#reservationButton") as HTMLButtonElement;
+let ratingDiv = document.querySelector("#ratingDiv") as HTMLDivElement;
+let ratingInput = document.querySelector("#ratingInput") as HTMLInputElement;
+let ratingButton = document.querySelector("#ratingButton") as HTMLButtonElement;
+let resInput = document.querySelector("#resInput") as HTMLInputElement;
+let resButton = document.querySelector("#resButton") as HTMLButtonElement;
 let hotelImg = document.querySelector("#hotelImg") as HTMLImageElement;
-let reservationsUl = document.querySelector("#reservationUl") as HTMLUListElement;
+let resUl = document.querySelector("#resUl") as HTMLUListElement;
 
-reservationInput.onchange = function() {
-  if (userId != null && reservationInput.value != "") {
-    reservationButton.disabled = false;
+resInput.onchange = function () {
+  if (userId != null && resInput.value != "") {
+    resButton.disabled = false;
   }
-}
+};
 
-reservationButton.onclick = async function() {
-  let date = reservationInput.value;
+resButton.onclick = async function () {
+  let date = resInput.value;
   let success = await send("addReservation", [date, userId, hotelId]);
 
   if (success) {
     alert("Reservation created successfully!");
     location.reload();
-  }
-  else {
+  } else {
     alert("The chosen date is already reserved.");
   }
 };
 
+ratingInput.oninput = function () {
+  if (ratingInput.value !== "") {
+    let rating = parseFloat(ratingInput.value);
+    if (rating < 0) ratingInput.value = "0";
+    if (rating > 5) ratingInput.value = "5";
+  }
+};
 
+ratingButton.onclick = async function () {
+  let rating = parseFloat(ratingInput.value);
+  if (!Number.isNaN(rating)) {
+    send("rate", [rating, userId, hotelId]);
+    drawStars();
+  } else {
+    alert("Enter a valid rating.");
+  }
+};
+
+async function drawStars() {
+  let rating = await send("getAverage", hotelId) as number;
+
+  ratingDiv.innerHTML = "";
+
+  for (let i = 1; i <= 5; i++) {
+    let img = document.createElement("img");
+    img.classList.add("star");
+    ratingDiv.appendChild(img);
+
+    if (i <= rating) {
+      img.src = "/website/images/star_full.png";
+    } else if (i - 0.5 <= rating) {
+      img.src = "/website/images/star_half.png";
+    } else {
+      img.src = "/website/images/star_empty.png";
+    }
+  }
+}
 
 let hotel = await send("getHotel", hotelId) as Hotel;
 
@@ -45,6 +83,12 @@ for (let i = 0; i < dates.length; i++) {
 
   let li = document.createElement("li");
   li.innerText = date;
-  reservationsUl.appendChild(li);
+  resUl.appendChild(li);
 }
 
+drawStars();
+
+if (userId != null) {
+  
+  ratingButton.disabled = false;
+}

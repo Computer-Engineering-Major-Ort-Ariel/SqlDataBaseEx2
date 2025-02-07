@@ -11,21 +11,26 @@
 
   <div class="container">
     <h1 id="hotelH1"></h1>
+    <div id="ratingDiv"></div>
+    <br>
+    <input id="ratingInput" placeholder="0 - 5"><button id="ratingButton" disabled>Rate</button>
+
+    <br>
+    <br>
 
     <label>Reserve a room for </label>
-    <input type="date" id="reservationInput">
-    <button id="reservationButton" disabled>Reserve</button>
+    <input type="date" id="resInput"><button id="resButton" disabled>Reserve</button>
 
-    <br />
-    <br />
+    <br>
+    <br>
 
     <img id="hotelImg">
 
-    <br />
-    <br />
+    <br>
+    <br>
 
     <div>Already reserved on:</div>
-    <ul id="reservationUl"></ul>
+    <ul id="resUl"></ul>
   </div>
 
   <script type="module" src="hotel.js"></script>
