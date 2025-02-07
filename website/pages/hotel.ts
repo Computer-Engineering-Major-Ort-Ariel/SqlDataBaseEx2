@@ -44,7 +44,7 @@ ratingInput.oninput = function () {
 ratingButton.onclick = async function () {
   let rating = parseFloat(ratingInput.value);
   if (!Number.isNaN(rating)) {
-    send("rate", [rating, userId, hotelId]);
+    await send("rate", [rating, userId, hotelId]);
     drawStars();
   } else {
     alert("Enter a valid rating.");
@@ -89,6 +89,6 @@ for (let i = 0; i < dates.length; i++) {
 drawStars();
 
 if (userId != null) {
-  
+
   ratingButton.disabled = false;
 }
