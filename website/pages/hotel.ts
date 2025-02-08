@@ -72,12 +72,17 @@ async function drawStars() {
 }
 
 let hotel = await send("getHotel", hotelId) as Hotel;
-
 hotelH1.innerText = hotel.Name;
 hotelImg.src = hotel.Image;
 
-let dates = await send("getDates", hotelId) as string[];
+if (userId != null) {
+  let ratingValue = await send("getRating", [userId, hotelId]) as string | null;
+  if (ratingValue != null) {
+    ratingInput.value = ratingValue;
+  }
+}
 
+let dates = await send("getDates", hotelId) as string[];
 for (let i = 0; i < dates.length; i++) {
   let date = dates[i];
 
@@ -89,6 +94,5 @@ for (let i = 0; i < dates.length; i++) {
 drawStars();
 
 if (userId != null) {
-
   ratingButton.disabled = false;
 }

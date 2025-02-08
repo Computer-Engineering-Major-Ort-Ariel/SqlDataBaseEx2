@@ -167,6 +167,16 @@ class Program
 
             database.Remove(res);
           }
+          else if (request.Path == "getRating")
+          {
+            var (userId, hotelId) = request.GetBody<(string, int)>();
+
+            var value = database.Ratings
+              .FirstOrDefault(rating => rating.UserId == userId && rating.HotelId == hotelId)?
+              .Value;
+
+            response.Send(value);
+          }
           else if (request.Path == "rate")
           {
 
